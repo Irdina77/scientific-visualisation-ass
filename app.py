@@ -430,6 +430,12 @@ map_plot = map_plot.dropna(
     subset=["abs", "completion"]
 ).copy()
 
+# Calculate average values for each state
+map_plot = map_plot.groupby("state", as_index=False).agg(
+    abs=("abs", "mean"),
+    completion=("completion", "mean")
+)
+
 map_plot["latitude"] = map_plot["state"].map(
     lambda s: coordinates.get(s, (np.nan, np.nan))[0]
 )
