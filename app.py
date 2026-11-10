@@ -458,13 +458,12 @@ if not map_plot.empty:
         color="completion",
         hover_name="state",
         text="state",
-        hover_data={
-            "abs": ":,.0f",
-            "completion": ":.2f",
-            "year": True,
-            "latitude": False,
-            "longitude": False
-        },
+hover_data={
+    "abs": ":,.0f",
+    "completion": ":.2f",
+    "latitude": False,
+    "longitude": False
+},
         size_max=35,
         color_continuous_scale="Viridis",
         projection="mercator",
