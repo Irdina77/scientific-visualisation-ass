@@ -1,0 +1,81 @@
+state,abs,rate,year,stage,sex,completion,income_mean,income_median
+Johor,60418,15.9,2016,primary,both,99.06,6928,5652.0
+Johor,60921,15.4,2019,primary,both,97.7,8013,6427.0
+Johor,56908,14.2,2020,primary,both,98.2,7264,5690.0
+Johor,48254,12.0,2022,primary,both,99.0,8517,6879.0
+Johor,51011,12.2,2024,primary,both,97.1,9484,7712.0
+Kedah,36677,17.7,2016,primary,both,99.97,4971,3811.0
+Kedah,34935,16.5,2019,primary,both,100.2,5522,4325.0
+Kedah,33828,15.9,2020,primary,both,100.1,5005,3829.0
+Kedah,30796,14.2,2022,primary,both,101.1,5550,4402.0
+Kedah,30622,13.8,2024,primary,both,101.0,5793,4895.0
+Kelantan,38929,22.4,2016,primary,both,100.32,4214,3079.0
+Kelantan,36989,20.7,2019,primary,both,99.9,4874,3563.0
+Kelantan,36275,20.2,2020,primary,both,99.5,4411,3010.0
+Kelantan,33808,18.5,2022,primary,both,98.2,4885,3614.0
+Kelantan,31861,16.9,2024,primary,both,101.0,5265,4083.0
+Melaka,14551,15.8,2016,primary,both,98.92,6849,5588.0
+Melaka,14164,14.7,2019,primary,both,98.7,7741,6054.0
+Melaka,13855,13.9,2020,primary,both,98.5,7186,5447.0
+Melaka,13105,13.0,2022,primary,both,99.5,8057,6210.0
+Melaka,12544,12.0,2024,primary,both,97.8,8686,6891.0
+Negeri Sembilan,18379,15.9,2016,primary,both,98.29,5887,4579.0
+Negeri Sembilan,17626,14.6,2019,primary,both,98.9,6707,5005.0
+Negeri Sembilan,17120,14.3,2020,primary,both,100.1,6184,4478.0
+Negeri Sembilan,15991,13.2,2022,primary,both,101.6,6788,5226.0
+Negeri Sembilan,14718,11.9,2024,primary,both,100.3,7305,5591.0
+Pahang,27681,17.5,2016,primary,both,97.72,5012,3979.0
+Pahang,25987,16.2,2019,primary,both,96.3,5667,4440.0
+Pahang,25344,15.9,2020,primary,both,97.0,5144,4033.0
+Pahang,23568,14.6,2022,primary,both,96.5,5777,4753.0
+Pahang,21505,12.9,2024,primary,both,97.8,6066,4975.0
+Perak,36090,14.7,2016,primary,both,98.83,5065,4006.0
+Perak,33437,13.5,2019,primary,both,98.6,5645,4273.0
+Perak,31582,12.7,2020,primary,both,99.1,5081,3759.0
+Perak,29543,11.7,2022,primary,both,99.9,5779,4494.0
+Perak,27616,10.7,2024,primary,both,99.8,6173,4687.0
+Perlis,4453,16.6,2016,primary,both,101.66,4998,4204.0
+Perlis,4061,14.4,2019,primary,both,99.0,5476,4594.0
+Perlis,4101,14.4,2020,primary,both,98.8,4971,4043.0
+Perlis,3746,12.9,2022,primary,both,105.5,5664,4713.0
+Perlis,3569,12.0,2024,primary,both,98.1,5996,4950.0
+Pulau Pinang,22064,13.0,2016,primary,both,96.55,6771,5409.0
+Pulau Pinang,20383,11.8,2019,primary,both,96.0,7774,6169.0
+Pulau Pinang,19645,11.3,2020,primary,both,96.9,6850,5474.0
+Pulau Pinang,17731,10.2,2022,primary,both,97.7,8267,6502.0
+Pulau Pinang,18174,10.1,2024,primary,both,97.2,9152,7386.0
+Sabah,53166,14.4,2016,primary,both,99.75,5354,4110.0
+Sabah,53516,14.5,2019,primary,both,100.3,5745,4235.0
+Sabah,49587,14.5,2020,primary,both,100.3,5215,3773.0
+Sabah,43617,12.8,2022,primary,both,100.6,6171,4577.0
+Sabah,42068,11.2,2024,primary,both,100.6,6498,4890.0
+Sarawak,38267,15.1,2016,primary,both,99.4,5387,4163.0
+Sarawak,36447,14.6,2019,primary,both,99.9,5959,4544.0
+Sarawak,35449,14.4,2020,primary,both,99.9,5087,3831.0
+Sarawak,30937,12.5,2022,primary,both,100.7,6457,4978.0
+Sarawak,30257,12.0,2024,primary,both,99.4,6947,5504.0
+Selangor,106315,16.3,2016,primary,both,96.86,9463,7225.0
+Selangor,96610,14.0,2019,primary,both,96.1,10827,8210.0
+Selangor,93577,13.4,2020,primary,both,97.3,9668,7300.0
+Selangor,83658,11.9,2022,primary,both,98.6,12233,9983.0
+Selangor,83174,11.3,2024,primary,both,96.6,13296,10726.0
+Terengganu,27777,24.6,2016,primary,both,100.43,5776,4694.0
+Terengganu,27229,23.7,2019,primary,both,100.7,6815,5545.0
+Terengganu,27177,23.6,2020,primary,both,100.4,6051,4790.0
+Terengganu,25304,21.3,2022,primary,both,103.8,7248,5878.0
+Terengganu,23712,19.3,2024,primary,both,101.4,7627,6627.0
+W.P. Kuala Lumpur,26242,13.9,2016,primary,both,91.93,11692,9073.0
+W.P. Kuala Lumpur,27447,14.0,2019,primary,both,91.6,13257,10549.0
+W.P. Kuala Lumpur,23199,11.7,2020,primary,both,92.4,11728,9093.0
+W.P. Kuala Lumpur,19853,10.1,2022,primary,both,93.8,13325,10234.0
+W.P. Kuala Lumpur,21229,10.3,2024,primary,both,92.2,13985,10802.0
+W.P. Labuan,1775,18.8,2016,primary,both,95.05,8174,5928.0
+W.P. Labuan,1653,17.3,2019,primary,both,89.8,8319,6726.0
+W.P. Labuan,1714,18.0,2020,primary,both,94.1,7333,6126.0
+W.P. Labuan,1374,14.2,2022,primary,both,92.4,8250,6904.0
+W.P. Labuan,1310,13.0,2024,primary,both,92.3,8555,7383.0
+W.P. Putrajaya,2602,26.9,2016,primary,both,103.48,11555,8275.0
+W.P. Putrajaya,2344,22.0,2019,primary,both,99.5,12840,9983.0
+W.P. Putrajaya,2143,19.6,2020,primary,both,101.4,12322,9743.0
+W.P. Putrajaya,1839,15.7,2022,primary,both,102.9,13473,10056.0
+W.P. Putrajaya,1548,12.9,2024,primary,both,105.7,13846,10769.0

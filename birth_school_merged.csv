@@ -1,0 +1,161 @@
+state,abs,rate,year,stage,sex,completion
+Johor,60418,15.9,2016,primary,both,99.06
+Johor,61837,16.0,2017,primary,both,99.14
+Johor,61935,15.7,2018,primary,both,97.56
+Johor,60921,15.4,2019,primary,both,97.7
+Johor,56908,14.2,2020,primary,both,98.2
+Johor,49990,12.4,2021,primary,both,95.5
+Johor,48254,12.0,2022,primary,both,99.0
+Johor,56156,13.7,2023,primary,both,97.5
+Johor,51011,12.2,2024,primary,both,97.1
+Johor,48093,11.4,2025,primary,both,96.9
+Kedah,36677,17.7,2016,primary,both,99.97
+Kedah,37191,17.8,2017,primary,both,100.12
+Kedah,36115,17.1,2018,primary,both,100.34
+Kedah,34935,16.5,2019,primary,both,100.2
+Kedah,33828,15.9,2020,primary,both,100.1
+Kedah,33040,15.4,2021,primary,both,97.2
+Kedah,30796,14.2,2022,primary,both,101.1
+Kedah,33811,15.4,2023,primary,both,100.7
+Kedah,30622,13.8,2024,primary,both,101.0
+Kedah,30163,13.5,2025,primary,both,101.4
+Kelantan,38929,22.4,2016,primary,both,100.32
+Kelantan,39306,22.4,2017,primary,both,100.17
+Kelantan,38624,21.8,2018,primary,both,99.32
+Kelantan,36989,20.7,2019,primary,both,99.9
+Kelantan,36275,20.2,2020,primary,both,99.5
+Kelantan,34764,19.2,2021,primary,both,100.2
+Kelantan,33808,18.5,2022,primary,both,98.2
+Kelantan,35705,19.2,2023,primary,both,101.2
+Kelantan,31861,16.9,2024,primary,both,101.0
+Kelantan,31858,16.7,2025,primary,both,102.4
+Melaka,14551,15.8,2016,primary,both,98.92
+Melaka,14547,15.5,2017,primary,both,98.87
+Melaka,14429,15.1,2018,primary,both,98.92
+Melaka,14164,14.7,2019,primary,both,98.7
+Melaka,13855,13.9,2020,primary,both,98.5
+Melaka,13192,13.1,2021,primary,both,95.1
+Melaka,13105,13.0,2022,primary,both,99.5
+Melaka,13583,13.2,2023,primary,both,97.1
+Melaka,12544,12.0,2024,primary,both,97.8
+Melaka,11860,11.3,2025,primary,both,97.4
+Negeri Sembilan,18379,15.9,2016,primary,both,98.29
+Negeri Sembilan,18401,15.7,2017,primary,both,98.95
+Negeri Sembilan,18341,15.4,2018,primary,both,99.24
+Negeri Sembilan,17626,14.6,2019,primary,both,98.9
+Negeri Sembilan,17120,14.3,2020,primary,both,100.1
+Negeri Sembilan,16777,13.9,2021,primary,both,102.9
+Negeri Sembilan,15991,13.2,2022,primary,both,101.6
+Negeri Sembilan,16570,13.5,2023,primary,both,101.1
+Negeri Sembilan,14718,11.9,2024,primary,both,100.3
+Negeri Sembilan,14141,11.4,2025,primary,both,100.0
+Pahang,27681,17.5,2016,primary,both,97.72
+Pahang,27809,17.5,2017,primary,both,97.57
+Pahang,27116,16.9,2018,primary,both,97.13
+Pahang,25987,16.2,2019,primary,both,96.3
+Pahang,25344,15.9,2020,primary,both,97.0
+Pahang,24507,15.3,2021,primary,both,97.3
+Pahang,23568,14.6,2022,primary,both,96.5
+Pahang,24162,14.7,2023,primary,both,97.9
+Pahang,21505,12.9,2024,primary,both,97.8
+Pahang,20654,12.3,2025,primary,both,98.2
+Perak,36090,14.7,2016,primary,both,98.83
+Perak,35341,14.4,2017,primary,both,98.9
+Perak,34336,13.9,2018,primary,both,98.09
+Perak,33437,13.5,2019,primary,both,98.6
+Perak,31582,12.7,2020,primary,both,99.1
+Perak,30816,12.2,2021,primary,both,98.8
+Perak,29543,11.7,2022,primary,both,99.9
+Perak,30759,12.1,2023,primary,both,100.2
+Perak,27616,10.7,2024,primary,both,99.8
+Perak,26275,10.2,2025,primary,both,100.2
+Perlis,4453,16.6,2016,primary,both,101.66
+Perlis,4523,16.5,2017,primary,both,99.22
+Perlis,4427,15.9,2018,primary,both,99.61
+Perlis,4061,14.4,2019,primary,both,99.0
+Perlis,4101,14.4,2020,primary,both,98.8
+Perlis,4076,14.2,2021,primary,both,96.9
+Perlis,3746,12.9,2022,primary,both,105.5
+Perlis,3878,13.2,2023,primary,both,99.9
+Perlis,3569,12.0,2024,primary,both,98.1
+Perlis,3508,11.8,2025,primary,both,100.4
+Pulau Pinang,22064,13.0,2016,primary,both,96.55
+Pulau Pinang,21732,12.7,2017,primary,both,96.71
+Pulau Pinang,20951,12.2,2018,primary,both,96.52
+Pulau Pinang,20383,11.8,2019,primary,both,96.0
+Pulau Pinang,19645,11.3,2020,primary,both,96.9
+Pulau Pinang,18571,10.7,2021,primary,both,94.0
+Pulau Pinang,17731,10.2,2022,primary,both,97.7
+Pulau Pinang,19579,11.0,2023,primary,both,96.7
+Pulau Pinang,18174,10.1,2024,primary,both,97.2
+Pulau Pinang,16722,9.3,2025,primary,both,97.0
+Sabah,53166,14.4,2016,primary,both,99.75
+Sabah,53686,14.5,2017,primary,both,99.04
+Sabah,53639,14.4,2018,primary,both,99.12
+Sabah,53516,14.5,2019,primary,both,100.3
+Sabah,49587,14.5,2020,primary,both,100.3
+Sabah,41608,12.2,2021,primary,both,97.7
+Sabah,43617,12.8,2022,primary,both,100.6
+Sabah,46412,12.9,2023,primary,both,100.9
+Sabah,42068,11.2,2024,primary,both,100.6
+Sabah,40768,10.9,2025,primary,both,100.0
+Sarawak,38267,15.1,2016,primary,both,99.4
+Sarawak,37963,15.0,2017,primary,both,99.54
+Sarawak,36943,14.7,2018,primary,both,99.23
+Sarawak,36447,14.6,2019,primary,both,99.9
+Sarawak,35449,14.4,2020,primary,both,99.9
+Sarawak,31274,12.7,2021,primary,both,100.1
+Sarawak,30937,12.5,2022,primary,both,100.7
+Sarawak,33920,13.6,2023,primary,both,100.1
+Sarawak,30257,12.0,2024,primary,both,99.4
+Sarawak,28678,11.3,2025,primary,both,99.6
+Selangor,106315,16.3,2016,primary,both,96.86
+Selangor,105843,15.9,2017,primary,both,96.03
+Selangor,103566,15.2,2018,primary,both,95.56
+Selangor,96610,14.0,2019,primary,both,96.1
+Selangor,93577,13.4,2020,primary,both,97.3
+Selangor,90118,12.8,2021,primary,both,104.5
+Selangor,83658,11.9,2022,primary,both,98.6
+Selangor,90535,12.6,2023,primary,both,97.1
+Selangor,83174,11.3,2024,primary,both,96.6
+Selangor,78164,10.6,2025,primary,both,96.8
+Terengganu,27777,24.6,2016,primary,both,100.43
+Terengganu,28108,24.7,2017,primary,both,100.06
+Terengganu,28448,24.8,2018,primary,both,99.87
+Terengganu,27229,23.7,2019,primary,both,100.7
+Terengganu,27177,23.6,2020,primary,both,100.4
+Terengganu,26337,22.5,2021,primary,both,103.7
+Terengganu,25304,21.3,2022,primary,both,103.8
+Terengganu,26127,21.6,2023,primary,both,101.2
+Terengganu,23712,19.3,2024,primary,both,101.4
+Terengganu,23292,18.7,2025,primary,both,101.4
+W.P. Kuala Lumpur,26242,13.9,2016,primary,both,91.93
+W.P. Kuala Lumpur,25113,13.1,2017,primary,both,90.37
+W.P. Kuala Lumpur,24506,12.6,2018,primary,both,91.18
+W.P. Kuala Lumpur,27447,14.0,2019,primary,both,91.6
+W.P. Kuala Lumpur,23199,11.7,2020,primary,both,92.4
+W.P. Kuala Lumpur,21046,10.7,2021,primary,both,94.5
+W.P. Kuala Lumpur,19853,10.1,2022,primary,both,93.8
+W.P. Kuala Lumpur,21442,10.7,2023,primary,both,92.9
+W.P. Kuala Lumpur,21229,10.3,2024,primary,both,92.2
+W.P. Kuala Lumpur,19430,9.4,2025,primary,both,92.4
+W.P. Labuan,1775,18.8,2016,primary,both,95.05
+W.P. Labuan,1732,18.1,2017,primary,both,91.31
+W.P. Labuan,1710,17.8,2018,primary,both,94.54
+W.P. Labuan,1653,17.3,2019,primary,both,89.8
+W.P. Labuan,1714,18.0,2020,primary,both,94.1
+W.P. Labuan,1522,15.9,2021,primary,both,91.4
+W.P. Labuan,1374,14.2,2022,primary,both,92.4
+W.P. Labuan,1409,14.2,2023,primary,both,92.9
+W.P. Labuan,1310,13.0,2024,primary,both,92.3
+W.P. Labuan,1147,11.4,2025,primary,both,94.1
+W.P. Putrajaya,2602,26.9,2016,primary,both,103.48
+W.P. Putrajaya,2535,25.3,2017,primary,both,103.56
+W.P. Putrajaya,2414,33.2,2018,primary,both,101.26
+W.P. Putrajaya,2344,22.0,2019,primary,both,99.5
+W.P. Putrajaya,2143,19.6,2020,primary,both,101.4
+W.P. Putrajaya,2106,18.3,2021,primary,both,76.8
+W.P. Putrajaya,1839,15.7,2022,primary,both,102.9
+W.P. Putrajaya,1713,14.4,2023,primary,both,103.1
+W.P. Putrajaya,1548,12.9,2024,primary,both,105.7
+W.P. Putrajaya,1422,11.8,2025,primary,both,108.4
