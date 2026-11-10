@@ -483,24 +483,25 @@ hover_data={
         )
     )
 
-    fig3.update_geos(
-        center=dict(lat=4.5, lon=109),
-        lataxis_range=[0, 8],
-        lonaxis_range=[99, 120],
-        showland=True,
-        landcolor="#F0F0F0",
-        showocean=True,
-        oceancolor="#E8F3FA",
-        showcountries=True,
-        countrycolor="#B8C5D1",
-        showcoastlines=True,
-        coastlinecolor="#B8C5D1",
-        resolution=50
-    )
+fig3.update_geos(
+    center=dict(lat=4.5, lon=109),
+    projection_scale=1.25,
+    lataxis_range=[0, 8],
+    lonaxis_range=[99, 120],
+    showland=True,
+    landcolor="#F0F0F0",
+    showocean=True,
+    oceancolor="#E8F3FA",
+    showcountries=True,
+    countrycolor="#B8C5D1",
+    showcoastlines=True,
+    coastlinecolor="#B8C5D1",
+    resolution=50
+)
 
     fig3.update_layout(
         template="plotly_white",
-        height=650,
+        height=750,
         margin=dict(l=10, r=10, t=70, b=10)
     )
 
