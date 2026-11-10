@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -6,216 +5,406 @@ import plotly.graph_objects as go
 import numpy as np
 from pathlib import Path
 
-# ==========================================
+# =========================================================
 # 1. PAGE CONFIGURATION
-# ==========================================
-
+# =========================================================
 st.set_page_config(
     page_title="Malaysia Data Visualization Dashboard",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-# ==========================================
-# 2. CUSTOM DESIGN
-# ==========================================
+# =========================================================
+# 2. THEME / CUSTOM CSS
+# =========================================================
+BLUE = "#245A9A"
+DARK_BLUE = "#173B70"
+TEAL = "#18A999"
+LIGHT_BLUE = "#A8D5F5"
+ORANGE = "#F2A65A"
 
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F5F7FB;
-}
-.main-title {
-    color: #183B70;
-    font-size: 32px;
-    font-weight: 800;
-}
-.subtitle {
-    color: #64748B;
-    font-size: 15px;
-}
-.section-title {
-    color: #183B70;
-    font-size: 23px;
-    font-weight: 700;
-}
-div[data-testid="stMetric"] {
-    background-color: white;
-    padding: 18px;
-    border-radius: 12px;
-    border: 1px solid #E2E8F0;
-}
-</style>
-""", unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    .stApp { background: #F4F7FC; }
+    .block-container {
+        max-width: 1500px;
+        padding-top: 2rem;
+        padding-bottom: 2.5rem;
+    }
+    section[data-testid="stSidebar"] {
+        background: #FFFFFF;
+        border-right: 1px solid #E2E8F0;
+    }
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #173B70;
+    }
+    .dashboard-hero {
+        background: linear-gradient(120deg, #173B70 0%, #245A9A 65%, #18A999 100%);
+        padding: 28px 32px;
+        border-radius: 18px;
+        margin-bottom: 22px;
+        box-shadow: 0 8px 22px rgba(23, 59, 112, 0.12);
+    }
+    .hero-eyebrow {
+        color: #DCEAFE;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+    .hero-title {
+        color: #FFFFFF;
+        font-size: 34px;
+        line-height: 1.2;
+        font-weight: 800;
+        margin: 0;
+    }
+    .hero-subtitle {
+        color: #E6F0FF;
+        font-size: 15px;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+    .section-title {
+        color: #173B70;
+        font-size: 24px;
+        font-weight: 800;
+        margin: 4px 0 4px 0;
+    }
+    .section-description {
+        color: #64748B;
+        font-size: 14px;
+        margin-bottom: 14px;
+    }
+    div[data-testid="stMetric"] {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 4px 14px rgba(23, 59, 112, 0.045);
+    }
+    div[data-testid="stMetricLabel"] {
+        color: #64748B;
+        font-weight: 600;
+    }
+    div[data-testid="stMetricValue"] {
+        color: #173B70;
+        font-weight: 800;
+    }
+    div[data-testid="stAlert"] { border-radius: 12px; }
+    div[data-baseweb="select"] { border-radius: 10px; }
+    hr { border-color: #DCE4F0; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-# ==========================================
-# 3. LOAD DATASETS
-# ==========================================
-
+# =========================================================
+# 3. DATA LOADING
+# Keep these three CSV files in the same folder as app.py:
+# birth_income_merged.csv
+# school_income_merged.csv
+# birth_school_merged.csv
+# =========================================================
 BASE_DIR = Path(__file__).parent
 
 @st.cache_data
+
 def load_data(filename):
-    return pd.read_csv(BASE_DIR / filename)
+    file_path = BASE_DIR / filename
+    if not file_path.exists():
+        raise FileNotFoundError(f"File not found: {filename}")
+    return pd.read_csv(file_path)
 
 try:
     df_birth_income = load_data("birth_income_merged.csv")
     df_school_income = load_data("school_income_merged.csv")
     df_birth_school = load_data("birth_school_merged.csv")
-
-except Exception as e:
-    st.error(f"Unable to load dataset: {e}")
+except Exception as error:
+    st.error(f"Unable to load dataset: {error}")
+    st.info("Make sure all three CSV files are uploaded to the same GitHub repository folder as app.py.")
     st.stop()
 
-# Clean column values
-datasets = [df_birth_income, df_school_income, df_birth_school]
+# =========================================================
+# 4. DATA CLEANING
+# =========================================================
+required_columns = {
+    "birth_income": {"state", "year", "abs", "rate", "income_mean"},
+    "school_income": {"state", "year", "completion", "income_mean"},
+    "birth_school": {"state", "year", "abs", "completion"},
+}
 
-for df in datasets:
-    df["state"] = df["state"].astype(str).str.strip()
-    df["year"] = pd.to_numeric(df["year"], errors="coerce")
+for dataset_name, dataframe in [
+    ("birth_income", df_birth_income),
+    ("school_income", df_school_income),
+    ("birth_school", df_birth_school),
+]:
+    missing = required_columns[dataset_name] - set(dataframe.columns)
+    if missing:
+        st.error(
+            f"The {dataset_name} dataset is missing these columns: "
+            f"{', '.join(sorted(missing))}. Please check the CSV column names."
+        )
+        st.stop()
 
-    for col in ["abs", "rate", "completion",
-                "income_mean", "income_median"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
 
-# ==========================================
-# 4. DASHBOARD HEADER
-# ==========================================
+def clean_dataset(dataframe):
+    data = dataframe.copy()
+    data["state"] = data["state"].astype(str).str.strip()
+    data["year"] = pd.to_numeric(data["year"], errors="coerce")
 
-st.markdown(
-    '<div class="main-title">Malaysia Data Visualization Dashboard</div>',
-    unsafe_allow_html=True
-)
+    numeric_columns = [
+        "abs", "rate", "completion", "income_mean", "income_median"
+    ]
+    for column in numeric_columns:
+        if column in data.columns:
+            data[column] = pd.to_numeric(data[column], errors="coerce")
 
-st.markdown(
-    '<div class="subtitle">An Analysis of Annual Live Births, '
-    'Household Income and Primary School Completion Rates '
-    'Across Malaysian States</div>',
-    unsafe_allow_html=True
-)
+    data = data.dropna(subset=["state"])
+    data = data[~data["state"].str.lower().isin(["nan", "malaysia", ""])]
+    return data
 
-st.divider()
 
-# ==========================================
-# 5. SIDEBAR FILTER
-# ==========================================
+df_birth_income = clean_dataset(df_birth_income)
+df_school_income = clean_dataset(df_school_income)
+df_birth_school = clean_dataset(df_birth_school)
 
-st.sidebar.title("Dashboard Filters")
-st.sidebar.markdown("Select states to explore the data.")
+# =========================================================
+# 5. SHARED HELPER FUNCTIONS
+# =========================================================
+def year_filter(dataframe, label, key):
+    available_years = sorted(
+        dataframe["year"].dropna().astype(int).unique().tolist()
+    )
+    options = ["All Years"] + available_years
+    selected_year = st.selectbox(label, options, key=key)
 
+    if selected_year == "All Years":
+        return dataframe.copy()
+    return dataframe[dataframe["year"] == selected_year].copy()
+
+
+def correlation_strength(value):
+    if pd.isna(value):
+        return "Not available"
+    absolute_value = abs(value)
+    if absolute_value < 0.30:
+        return "Weak"
+    if absolute_value < 0.70:
+        return "Moderate"
+    return "Strong"
+
+
+def style_figure(fig, height=520):
+    fig.update_layout(
+        template="plotly_white",
+        height=height,
+        font=dict(family="Arial", size=12, color="#334155"),
+        title=dict(font=dict(size=19, color=DARK_BLUE)),
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
+        margin=dict(l=35, r=30, t=75, b=45),
+        legend_title_font=dict(color=DARK_BLUE),
+        hoverlabel=dict(bgcolor="white", font_size=12),
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="#E8EEF6", zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor="#E8EEF6", zeroline=False)
+    return fig
+
+
+def show_map(dataframe, value_column, title, color_label):
+    state_coordinates = {
+        "Johor": (1.85, 103.20),
+        "Kedah": (6.12, 100.37),
+        "Kelantan": (5.33, 102.00),
+        "Melaka": (2.19, 102.25),
+        "Negeri Sembilan": (2.72, 101.94),
+        "Pahang": (3.75, 102.40),
+        "Perak": (4.75, 100.90),
+        "Perlis": (6.45, 100.20),
+        "Pulau Pinang": (5.41, 100.33),
+        "Penang": (5.41, 100.33),
+        "Sabah": (5.98, 116.07),
+        "Sarawak": (1.55, 110.35),
+        "Selangor": (3.20, 101.50),
+        "Terengganu": (5.31, 103.13),
+        "W.P. Kuala Lumpur": (3.14, 101.69),
+        "Kuala Lumpur": (3.14, 101.69),
+        "W.P. Labuan": (5.28, 115.24),
+        "Labuan": (5.28, 115.24),
+        "W.P. Putrajaya": (2.93, 101.69),
+        "Putrajaya": (2.93, 101.69),
+    }
+
+    map_data = dataframe.copy()
+    map_data["latitude"] = map_data["state"].map(
+        lambda state: state_coordinates.get(state, (np.nan, np.nan))[0]
+    )
+    map_data["longitude"] = map_data["state"].map(
+        lambda state: state_coordinates.get(state, (np.nan, np.nan))[1]
+    )
+    map_data = map_data.dropna(
+        subset=["latitude", "longitude", value_column]
+    )
+
+    if map_data.empty:
+        st.warning("No recognised Malaysian state data is available for this map.")
+        return
+
+    fig = px.scatter_geo(
+        map_data,
+        lat="latitude",
+        lon="longitude",
+        size=value_column,
+        color=value_column,
+        hover_name="state",
+        hover_data={
+            value_column: ":,.2f",
+            "latitude": False,
+            "longitude": False,
+        },
+        scope="asia",
+        title=title,
+        color_continuous_scale="Tealgrn",
+        size_max=34,
+        labels={value_column: color_label},
+        projection="mercator",
+    )
+    fig.update_traces(
+        marker=dict(
+            opacity=0.88,
+            line=dict(width=1.5, color="white"),
+        )
+    )
+    fig.update_geos(
+        center=dict(lat=4.5, lon=109),
+        projection_scale=1.35,
+        lataxis_range=[0, 8],
+        lonaxis_range=[99, 120],
+        showland=True,
+        landcolor="#F0F3F7",
+        showocean=True,
+        oceancolor="#E8F3FA",
+        showcountries=True,
+        countrycolor="#B8C5D1",
+        showcoastlines=True,
+        coastlinecolor="#B8C5D1",
+        resolution=50,
+    )
+    fig.update_layout(
+        template="plotly_white",
+        height=650,
+        paper_bgcolor="#FFFFFF",
+        margin=dict(l=10, r=25, t=70, b=15),
+        font=dict(family="Arial", size=12, color="#334155"),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# =========================================================
+# 6. SIDEBAR FILTERS
+# =========================================================
 all_states = sorted(
-    set(df_birth_income["state"].dropna()) |
-    set(df_school_income["state"].dropna()) |
-    set(df_birth_school["state"].dropna())
+    set(df_birth_income["state"].dropna())
+    | set(df_school_income["state"].dropna())
+    | set(df_birth_school["state"].dropna())
 )
 
-selected_states = st.sidebar.multiselect(
-    "Select State",
-    options=all_states,
-    default=all_states
-)
+with st.sidebar:
+    st.markdown("## 📊 Dashboard Filters")
+    st.caption("Choose the Malaysian states to include in the analysis.")
+    selected_states = st.multiselect(
+        "Select State",
+        options=all_states,
+        default=all_states,
+    )
+    st.divider()
+    st.markdown("**Visualisation guide**")
+    st.caption("01 · Births vs Household Income")
+    st.caption("02 · School Completion vs Household Income")
+    st.caption("03 · Births vs School Completion")
+    st.divider()
+    st.caption("Scientific Visualisation Assignment | JIE42403")
 
 if not selected_states:
-    st.warning("Please select at least one state.")
+    st.warning("Please select at least one state from the sidebar to display the dashboard.")
     st.stop()
 
-# Apply state filter
 birth_income = df_birth_income[
     df_birth_income["state"].isin(selected_states)
 ].copy()
-
 school_income = df_school_income[
     df_school_income["state"].isin(selected_states)
 ].copy()
-
 birth_school = df_birth_school[
     df_birth_school["state"].isin(selected_states)
 ].copy()
 
-# Individual year filters
-def year_filter(df, label, key):
-    years = sorted(df["year"].dropna().astype(int).unique())
-
-    options = ["All Years"] + years
-
-    selected_year = st.selectbox(
-        label,
-        options=options,
-        key=key
-    )
-
-    if selected_year != "All Years":
-        return df[df["year"] == selected_year].copy()
-
-    return df.copy()
-
-# ==========================================
-# 6. DASHBOARD OVERVIEW
-# ==========================================
-
+# =========================================================
+# 7. DASHBOARD HEADER
+# =========================================================
 st.markdown(
-    '<div class="section-title">Dashboard Overview</div>',
-    unsafe_allow_html=True
+    """
+    <div class="dashboard-hero">
+        <div class="hero-eyebrow">Scientific Visualisation · Malaysia</div>
+        <div class="hero-title">Malaysia Data Visualization Dashboard</div>
+        <p class="hero-subtitle">
+            An analysis of annual live births, household income and
+            primary school completion rates across Malaysian states.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
-col1, col2, col3 = st.columns(3)
+# =========================================================
+# 8. DASHBOARD OVERVIEW / KPI CARDS
+# =========================================================
+st.markdown('<div class="section-title">Dashboard Overview</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-description">A quick summary of the selected state-level datasets.</div>',
+    unsafe_allow_html=True,
+)
 
-with col1:
-    st.metric(
-        "Number of States",
-        birth_income["state"].nunique()
-    )
-
-with col2:
-    st.metric(
-        "Total Annual Live Births",
-        f"{birth_income['abs'].sum():,.0f}"
-    )
-
-with col3:
-    st.metric(
-        "Average Household Income",
-        f"RM {birth_income['income_mean'].mean():,.0f}"
-    )
+kpi1, kpi2, kpi3 = st.columns(3)
+with kpi1:
+    st.metric("Number of States", f"{birth_income['state'].nunique():,}")
+with kpi2:
+    st.metric("Total Annual Live Births", f"{birth_income['abs'].sum():,.0f}")
+with kpi3:
+    st.metric("Average Household Income", f"RM {birth_income['income_mean'].mean():,.0f}")
 
 st.caption(
-    "The dashboard explores relationships between "
-    "birth statistics, household income and school completion "
-    "across Malaysian states."
+    "The dashboard explores patterns and relationships between birth statistics, "
+    "household income and primary school completion across Malaysian states."
 )
-
 st.divider()
 
-# ==========================================
-# 7. OBJECTIVE 1
-# Births vs Household Income
-# Bubble Chart
-# ==========================================
-
+# =========================================================
+# 9. OBJECTIVE 1: BIRTHS VS HOUSEHOLD INCOME
+# Bubble Chart: x = mean income, y = annual births, size = birth rate
+# =========================================================
 st.markdown(
-    '<div class="section-title">Objective 1: '
-    'Births vs Household Income</div>',
-    unsafe_allow_html=True
+    '<div class="section-title">Objective 1: Births vs Household Income</div>',
+    unsafe_allow_html=True,
 )
-
-st.write(
-    "To identify the relationship between annual live births "
-    "and household income across Malaysian states."
+st.markdown(
+    '<div class="section-description">To identify the relationship between annual live births and household income across Malaysian states.</div>',
+    unsafe_allow_html=True,
 )
 
 birth_plot = year_filter(
     birth_income,
     "Select Year - Objective 1",
-    "year_obj1"
+    "year_obj1",
 )
-
-birth_plot = birth_plot.dropna(
-    subset=["income_mean", "abs", "rate"]
-)
+birth_plot = birth_plot.dropna(subset=["income_mean", "abs", "rate"]).copy()
 
 if not birth_plot.empty:
-
     fig1 = px.scatter(
         birth_plot,
         x="income_mean",
@@ -227,306 +416,272 @@ if not birth_plot.empty:
             "year": True,
             "income_mean": ":,.0f",
             "abs": ":,.0f",
-            "rate": ":.2f"
+            "rate": ":.2f",
         },
-        size_max=40,
-        title="Relationship Between Household Income "
-              "and Annual Live Births",
+        size_max=38,
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        title="Relationship Between Household Income and Annual Live Births",
         labels={
             "income_mean": "Mean Household Income (MYR)",
             "abs": "Annual Live Births",
             "rate": "Birth Rate",
-            "state": "State"
-        }
+            "state": "State",
+            "year": "Year",
+        },
     )
-
-    fig1.update_layout(
-        template="plotly_white",
-        height=550,
-        legend_title="States"
+    fig1.update_traces(
+        marker=dict(opacity=0.78, line=dict(width=1, color="white"))
     )
-
+    style_figure(fig1, 560)
     st.plotly_chart(fig1, use_container_width=True)
-
     st.info(
-        "Bubble size represents birth rate. "
-        "Each colour represents a Malaysian state."
+        "Bubble size represents the birth rate. Each colour represents a Malaysian state. "
+        "Hover over a bubble to view the state, year, household income and birth information."
     )
 
-    st.markdown("**Statistical Summary**")
-
-    st.dataframe(
-        birth_plot[
-            ["state", "year", "income_mean", "abs", "rate"]
-        ].describe().round(2),
-        use_container_width=True
-    )
-
+    with st.expander("View Objective 1 statistical summary"):
+        summary1 = birth_plot[["income_mean", "abs", "rate"]].describe().round(2)
+        st.dataframe(summary1, use_container_width=True)
 else:
-    st.warning("No data available for Objective 1.")
+    st.warning("No data available for Objective 1 under the selected filters.")
 
 st.divider()
 
-# ==========================================
-# 8. OBJECTIVE 2
-# School Completion vs Household Income
-# Scatter Plot + Regression Line
-# ==========================================
-
+# =========================================================
+# 10. OBJECTIVE 2: SCHOOL COMPLETION VS HOUSEHOLD INCOME
+# Scatter Plot + Overall Regression Line
+# =========================================================
 st.markdown(
-    '<div class="section-title">Objective 2: '
-    'School Completion vs Household Income</div>',
-    unsafe_allow_html=True
+    '<div class="section-title">Objective 2: School Completion vs Household Income</div>',
+    unsafe_allow_html=True,
 )
-
-st.write(
-    "To examine the relationship between primary school "
-    "completion rates and household income across Malaysian states."
+st.markdown(
+    '<div class="section-description">To examine the relationship between primary school completion rates and household income across Malaysian states.</div>',
+    unsafe_allow_html=True,
 )
 
 school_plot = year_filter(
     school_income,
     "Select Year - Objective 2",
-    "year_obj2"
+    "year_obj2",
 )
-
-school_plot = school_plot.dropna(
-    subset=["income_mean", "completion"]
-)
+school_plot = school_plot.dropna(subset=["income_mean", "completion"]).copy()
 
 if not school_plot.empty:
-
     fig2 = px.scatter(
         school_plot,
         x="income_mean",
         y="completion",
         color="state",
         hover_name="state",
-        hover_data=["year"],
-        title="Relationship Between Household Income "
-              "and Primary School Completion Rate",
+        hover_data={
+            "year": True,
+            "income_mean": ":,.0f",
+            "completion": ":.2f",
+        },
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        title="Relationship Between Household Income and Primary School Completion Rate",
         labels={
             "income_mean": "Mean Household Income (MYR)",
             "completion": "Primary School Completion Rate (%)",
-            "state": "State"
-        }
+            "state": "State",
+            "year": "Year",
+        },
+    )
+    fig2.update_traces(
+        marker=dict(size=10, opacity=0.82, line=dict(width=1, color="white"))
     )
 
-    # Overall regression line
-    if (
-        len(school_plot) >= 2
-        and school_plot["income_mean"].nunique() >= 2
-    ):
-        x = school_plot["income_mean"].to_numpy()
-        y = school_plot["completion"].to_numpy()
-
-        slope, intercept = np.polyfit(x, y, 1)
-
-        x_line = np.linspace(x.min(), x.max(), 100)
+    # Add one overall linear regression line when there are enough valid points.
+    if len(school_plot) >= 2 and school_plot["income_mean"].nunique() >= 2:
+        x_values = school_plot["income_mean"].to_numpy(dtype=float)
+        y_values = school_plot["completion"].to_numpy(dtype=float)
+        slope, intercept = np.polyfit(x_values, y_values, 1)
+        x_line = np.linspace(x_values.min(), x_values.max(), 100)
         y_line = slope * x_line + intercept
-
         fig2.add_trace(
             go.Scatter(
                 x=x_line,
                 y=y_line,
                 mode="lines",
                 name="Overall Regression Line",
-                line=dict(color="red", width=3)
+                line=dict(color="#E4572E", width=3),
+                hoverinfo="skip",
             )
         )
 
-    fig2.update_layout(
-        template="plotly_white",
-        height=550,
-        legend_title="States"
-    )
-
+    style_figure(fig2, 560)
     st.plotly_chart(fig2, use_container_width=True)
 
-    # Correlation
     if len(school_plot) >= 2:
-        correlation = school_plot[
-            ["income_mean", "completion"]
-        ].corr().iloc[0, 1]
-
-        col1, col2 = st.columns(2)
-
-        with col1:
+        correlation = school_plot["income_mean"].corr(school_plot["completion"])
+        metric1, metric2 = st.columns(2)
+        with metric1:
             st.metric(
-                "Pearson Correlation",
-                f"{correlation:.3f}"
+                "Pearson Correlation (r)",
+                f"{correlation:.3f}" if pd.notna(correlation) else "Not available",
             )
+        with metric2:
+            st.metric("Correlation Strength", correlation_strength(correlation))
 
-        with col2:
-            if pd.isna(correlation):
-                strength = "Not available"
-            elif abs(correlation) < 0.3:
-                strength = "Weak"
-            elif abs(correlation) < 0.7:
-                strength = "Moderate"
-            else:
-                strength = "Strong"
-
-            st.metric(
-                "Correlation Strength",
-                strength
+        if pd.notna(correlation):
+            direction = "positive" if correlation > 0 else "negative" if correlation < 0 else "no linear"
+            st.info(
+                f"The Pearson correlation is {correlation:.3f}, indicating a "
+                f"{correlation_strength(correlation).lower()} {direction} association "
+                "between mean household income and school completion rate in the selected data. "
+                "Correlation does not prove causation."
             )
+    else:
+        st.info("At least two valid observations are required to calculate correlation and regression.")
 
-    st.info(
-        "The red line represents the overall linear regression trend. "
-        "Correlation measures the strength and direction of "
-        "the linear relationship."
-    )
-
+    with st.expander("View Objective 2 statistical summary"):
+        st.dataframe(
+            school_plot[["income_mean", "completion"]].describe().round(2),
+            use_container_width=True,
+        )
 else:
-    st.warning("No data available for Objective 2.")
+    st.warning("No data available for Objective 2 under the selected filters.")
 
 st.divider()
 
-# ==========================================
-# 9. OBJECTIVE 3
-# Births vs School Completion
+# =========================================================
+# 11. OBJECTIVE 3: BIRTHS VS SCHOOL COMPLETION
 # Geographical Bubble Map
-# ==========================================
-
+# =========================================================
 st.markdown(
-    '<div class="section-title">Objective 3: '
-    'Births vs School Completion</div>',
-    unsafe_allow_html=True
+    '<div class="section-title">Objective 3: Births vs School Completion</div>',
+    unsafe_allow_html=True,
 )
-
-st.write(
-    "To analyse the geographical distribution of annual live births "
-    "and primary school completion rates across Malaysian states."
+st.markdown(
+    '<div class="section-description">To analyse the geographical distribution of annual live births and primary school completion rates across Malaysian states.</div>',
+    unsafe_allow_html=True,
 )
 
 map_plot = year_filter(
     birth_school,
     "Select Year - Objective 3",
-    "year_obj3"
+    "year_obj3",
 )
-
-# Approximate geographical coordinates of Malaysian states
-coordinates = {
-    "Johor": (1.85, 103.20),
-    "Kedah": (6.12, 100.37),
-    "Kelantan": (5.33, 102.00),
-    "Melaka": (2.19, 102.25),
-    "Negeri Sembilan": (2.72, 101.94),
-    "Pahang": (3.75, 102.40),
-    "Perak": (4.75, 100.90),
-    "Perlis": (6.45, 100.20),
-    "Pulau Pinang": (5.41, 100.33),
-    "Sabah": (5.98, 116.07),
-    "Sarawak": (1.55, 110.35),
-    "Selangor": (3.20, 101.50),
-    "Terengganu": (5.31, 103.13),
-    "W.P. Kuala Lumpur": (3.14, 101.69),
-    "W.P. Labuan": (5.28, 115.24),
-    "W.P. Putrajaya": (2.93, 101.69)
-}
-
-map_plot = map_plot.dropna(
-    subset=["abs", "completion"]
-).copy()
-
-# Calculate average values for each state
-map_plot = map_plot.groupby("state", as_index=False).agg(
-    abs=("abs", "mean"),
-    completion=("completion", "mean")
-)
-
-map_plot["latitude"] = map_plot["state"].map(
-    lambda s: coordinates.get(s, (np.nan, np.nan))[0]
-)
-
-map_plot["longitude"] = map_plot["state"].map(
-    lambda s: coordinates.get(s, (np.nan, np.nan))[1]
-)
-
-map_plot = map_plot.dropna(
-    subset=["latitude", "longitude"]
-)
+map_plot = map_plot.dropna(subset=["abs", "completion"]).copy()
 
 if not map_plot.empty:
-
-    fig3 = px.scatter_geo(
-        map_plot,
-        lat="latitude",
-        lon="longitude",
-        size="abs",
-        color="completion",
-        hover_name="state",
-        text="state",
-hover_data={
-    "abs": ":,.0f",
-    "completion": ":.2f",
-    "latitude": False,
-    "longitude": False
-},
-        size_max=35,
-        color_continuous_scale="Viridis",
-        projection="mercator",
-        title="Malaysia Geographical Bubble Map",
-        labels={
-            "abs": "Annual Live Births",
-            "completion": "School Completion Rate (%)"
-        }
+    # Aggregate to one bubble per state. Year is deliberately excluded from hover data
+    # because it is no longer a column after this groupby operation.
+    map_plot = map_plot.groupby("state", as_index=False).agg(
+        abs=("abs", "mean"),
+        completion=("completion", "mean"),
     )
 
-    fig3.update_traces(
-        textposition="top center",
-        textfont=dict(size=9),
-        marker=dict(
-            opacity=0.8,
-            line=dict(width=1, color="white")
+    state_coordinates = {
+        "Johor": (1.85, 103.20),
+        "Kedah": (6.12, 100.37),
+        "Kelantan": (5.33, 102.00),
+        "Melaka": (2.19, 102.25),
+        "Negeri Sembilan": (2.72, 101.94),
+        "Pahang": (3.75, 102.40),
+        "Perak": (4.75, 100.90),
+        "Perlis": (6.45, 100.20),
+        "Pulau Pinang": (5.41, 100.33),
+        "Penang": (5.41, 100.33),
+        "Sabah": (5.98, 116.07),
+        "Sarawak": (1.55, 110.35),
+        "Selangor": (3.20, 101.50),
+        "Terengganu": (5.31, 103.13),
+        "W.P. Kuala Lumpur": (3.14, 101.69),
+        "Kuala Lumpur": (3.14, 101.69),
+        "W.P. Labuan": (5.28, 115.24),
+        "Labuan": (5.28, 115.24),
+        "W.P. Putrajaya": (2.93, 101.69),
+        "Putrajaya": (2.93, 101.69),
+    }
+
+    map_plot["latitude"] = map_plot["state"].map(
+        lambda state: state_coordinates.get(state, (np.nan, np.nan))[0]
+    )
+    map_plot["longitude"] = map_plot["state"].map(
+        lambda state: state_coordinates.get(state, (np.nan, np.nan))[1]
+    )
+    map_plot = map_plot.dropna(subset=["latitude", "longitude"])
+
+    if not map_plot.empty:
+        fig3 = px.scatter_geo(
+            map_plot,
+            lat="latitude",
+            lon="longitude",
+            size="abs",
+            color="completion",
+            hover_name="state",
+            hover_data={
+                "abs": ":,.0f",
+                "completion": ":.2f",
+                "latitude": False,
+                "longitude": False,
+            },
+            size_max=38,
+            color_continuous_scale="Tealgrn",
+            projection="mercator",
+            title="Malaysia Geographical Bubble Map",
+            labels={
+                "abs": "Annual Live Births",
+                "completion": "School Completion Rate (%)",
+            },
         )
-    )
-
-    fig3.update_geos(
-        center=dict(lat=4.5, lon=109),
-        projection_scale=1.25,
-        lataxis_range=[0, 8],
-        lonaxis_range=[99, 120],
-        showland=True,
-        landcolor="#F0F0F0",
-        showocean=True,
-        oceancolor="#E8F3FA",
-        showcountries=True,
-        countrycolor="#B8C5D1",
-        showcoastlines=True,
-        coastlinecolor="#B8C5D1",
-        resolution=50
-    )
-
-    fig3.update_layout(
-        template="plotly_white",
-        height=750,
-        margin=dict(l=10, r=10, t=70, b=10)
-    )
-
-    st.plotly_chart(fig3, use_container_width=True)
-
-    st.info(
-        "Bubble size represents annual live births. "
-        "Bubble colour represents primary school completion rate. "
-        "Hover over each bubble to view state-level details."
-    )
-
+        fig3.update_traces(
+            marker=dict(
+                opacity=0.88,
+                line=dict(width=1.5, color="white"),
+            )
+        )
+        fig3.update_geos(
+            center=dict(lat=4.5, lon=109),
+            projection_scale=1.35,
+            lataxis_range=[0, 8],
+            lonaxis_range=[99, 120],
+            showland=True,
+            landcolor="#F0F3F7",
+            showocean=True,
+            oceancolor="#E8F3FA",
+            showcountries=True,
+            countrycolor="#B8C5D1",
+            showcoastlines=True,
+            coastlinecolor="#B8C5D1",
+            resolution=50,
+        )
+        fig3.update_layout(
+            template="plotly_white",
+            height=680,
+            font=dict(family="Arial", size=12, color="#334155"),
+            paper_bgcolor="#FFFFFF",
+            margin=dict(l=10, r=25, t=70, b=15),
+        )
+        st.plotly_chart(fig3, use_container_width=True)
+        st.info(
+            "Bubble size represents annual live births. Bubble colour represents "
+            "the primary school completion rate. Hover over each bubble to view "
+            "the state-level values."
+        )
+        with st.expander("View Objective 3 state-level data"):
+            display_map = map_plot[["state", "abs", "completion"]].rename(
+                columns={
+                    "state": "State",
+                    "abs": "Annual Live Births",
+                    "completion": "School Completion Rate (%)",
+                }
+            )
+            st.dataframe(display_map, use_container_width=True, hide_index=True)
+    else:
+        st.warning("No recognised Malaysian state names were found for the geographical map.")
 else:
-    st.warning(
-        "No geographical data available. "
-        "Please check the state names in your dataset."
-    )
+    st.warning("No data available for Objective 3 under the selected filters.")
 
+# =========================================================
+# 12. FOOTER
+# =========================================================
 st.divider()
-
-# ==========================================
-# 10. FOOTER
-# ==========================================
-
 st.markdown(
-    "<center><small>Malaysia Data Visualization Dashboard "
-    "| Scientific Visualization Assignment</small></center>",
-    unsafe_allow_html=True
+    "<div style='text-align:center; color:#718096; font-size:12px;'>"
+    "Malaysia Data Visualization Dashboard · Scientific Visualisation Assignment · JIE42403"
+    "</div>",
+    unsafe_allow_html=True,
 )
