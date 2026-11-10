@@ -37,6 +37,107 @@ st.markdown(
         background: #FFFFFF;
         border-right: 1px solid #E2E8F0;
     }
+
+    /* Refined sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #FFFFFF 0%, #F7FAFF 100%);
+        border-right: 1px solid #DCE6F2;
+    }
+    section[data-testid="stSidebar"] > div {
+        padding-top: 1.6rem;
+    }
+    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0.8rem;
+    }
+    .sidebar-heading {
+        color: #173B70;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+        margin: 0 0 4px 0;
+    }
+    .sidebar-intro {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.55;
+        margin: 0 0 8px 0;
+    }
+    .sidebar-label {
+        color: #294B75;
+        font-size: 13px;
+        font-weight: 700;
+        margin: 8px 0 2px 0;
+    }
+    .sidebar-guide {
+        background: #FFFFFF;
+        border: 1px solid #E3EAF4;
+        border-radius: 12px;
+        padding: 12px 13px;
+        margin: 5px 0;
+        box-shadow: 0 3px 10px rgba(23, 59, 112, 0.035);
+    }
+    .sidebar-guide-item {
+        color: #52657D;
+        font-size: 12px;
+        line-height: 1.45;
+        padding: 7px 0;
+        border-bottom: 1px solid #EEF2F7;
+    }
+    .sidebar-guide-item:last-child {
+        border-bottom: none;
+        padding-bottom: 1px;
+    }
+    .sidebar-guide-number {
+        display: inline-block;
+        color: #245A9A;
+        background: #EAF2FF;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 6px;
+        padding: 3px 6px;
+        margin-right: 7px;
+    }
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div {
+        border: 1px solid #D5E0EE;
+        border-radius: 11px;
+        background: #FFFFFF;
+        min-height: 44px;
+        box-shadow: 0 2px 6px rgba(23, 59, 112, 0.035);
+    }
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div:focus-within {
+        border-color: #4C83C3;
+        box-shadow: 0 0 0 3px rgba(76, 131, 195, 0.13);
+    }
+    section[data-testid="stSidebar"] [data-baseweb="tag"] {
+        background: #E8F1FF !important;
+        border: 1px solid #C9DCF7 !important;
+        border-radius: 7px !important;
+        color: #214F86 !important;
+        font-weight: 600 !important;
+    }
+    section[data-testid="stSidebar"] [data-baseweb="tag"] span {
+        color: #214F86 !important;
+    }
+    section[data-testid="stSidebar"] button[kind="secondary"] {
+        border: 1px solid #D6E2F0;
+        border-radius: 9px;
+        color: #245A9A;
+        background: #FFFFFF;
+        font-size: 12px;
+        font-weight: 650;
+        min-height: 34px;
+    }
+    section[data-testid="stSidebar"] button[kind="secondary"]:hover {
+        border-color: #8FB3DF;
+        background: #F0F6FF;
+        color: #173B70;
+    }
+    .sidebar-footer {
+        color: #8A98AA;
+        font-size: 11px;
+        line-height: 1.5;
+        padding-top: 5px;
+    }
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
@@ -314,21 +415,63 @@ all_states = sorted(
     | set(df_birth_school["state"].dropna())
 )
 
+# Keep the state filter selection when the user clicks the quick-action buttons.
+if "state_filter" not in st.session_state:
+    st.session_state["state_filter"] = all_states.copy()
+
 with st.sidebar:
-    st.markdown("## 📊 Dashboard Filters")
-    st.caption("Choose the Malaysian states to include in the analysis.")
-    selected_states = st.multiselect(
-        "Select State",
-        options=all_states,
-        default=all_states,
+    st.markdown(
+        '<div class="sidebar-heading">📊 Dashboard Filters</div>'
+        '<p class="sidebar-intro">Personalise the dashboard by choosing the '
+        'Malaysian states included in your analysis.</p>',
+        unsafe_allow_html=True,
     )
+
+    st.markdown('<div class="sidebar-label">STATE SELECTION</div>', unsafe_allow_html=True)
+
+    select_col, clear_col = st.columns(2)
+    with select_col:
+        if st.button("Select all", use_container_width=True, key="select_all_states"):
+            st.session_state["state_filter"] = all_states.copy()
+    with clear_col:
+        if st.button("Clear", use_container_width=True, key="clear_states"):
+            st.session_state["state_filter"] = []
+
+    selected_states = st.multiselect(
+        "Choose state(s)",
+        options=all_states,
+        key="state_filter",
+        placeholder="Search or select states...",
+        help="You can select one state or multiple states. Use the buttons above to select all or clear the selection.",
+    )
+    st.caption(f"{len(selected_states)} of {len(all_states)} states selected")
+
     st.divider()
-    st.markdown("**Visualisation guide**")
-    st.caption("01 · Births vs Household Income")
-    st.caption("02 · School Completion vs Household Income")
-    st.caption("03 · Births vs School Completion")
-    st.divider()
-    st.caption("Scientific Visualisation Assignment | JIE42403")
+    st.markdown('<div class="sidebar-label">VISUALISATION GUIDE</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="sidebar-guide">
+            <div class="sidebar-guide-item">
+                <span class="sidebar-guide-number">01</span>
+                Births vs Household Income
+            </div>
+            <div class="sidebar-guide-item">
+                <span class="sidebar-guide-number">02</span>
+                School Completion vs Household Income
+            </div>
+            <div class="sidebar-guide-item">
+                <span class="sidebar-guide-number">03</span>
+                Births vs School Completion
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="sidebar-footer">SCIENTIFIC VISUALISATION ASSIGNMENT<br>'
+        'JIE42403 · MALAYSIA</div>',
+        unsafe_allow_html=True,
+    )
 
 if not selected_states:
     st.warning("Please select at least one state from the sidebar to display the dashboard.")
