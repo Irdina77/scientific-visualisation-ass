@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import numpy as np
 from pathlib import Path
 
@@ -690,131 +691,186 @@ st.divider()
 
 # =========================================================
 # 11. OBJECTIVE 3: BIRTHS VS SCHOOL COMPLETION
-# Geographical Bubble Map
+# Two-panel horizontal bar chart by Malaysian state
 # =========================================================
 st.markdown(
     '<div class="section-title">Objective 3: Births vs School Completion</div>',
     unsafe_allow_html=True,
 )
 st.markdown(
-    '<div class="section-description">To analyse the geographical distribution of annual live births and primary school completion rates across Malaysian states.</div>',
+    '<div class="section-description">'
+    'To compare annual live births and primary school completion rates '
+    'across Malaysian states.'
+    '</div>',
     unsafe_allow_html=True,
 )
 
-map_plot = year_filter(
+bar_plot = year_filter(
     birth_school,
     "Select Year - Objective 3",
     "year_obj3",
 )
-map_plot = map_plot.dropna(subset=["abs", "completion"]).copy()
 
-if not map_plot.empty:
-    # Aggregate to one bubble per state. Year is deliberately excluded from hover data
-    # because it is no longer a column after this groupby operation.
-    map_plot = map_plot.groupby("state", as_index=False).agg(
-        abs=("abs", "mean"),
-        completion=("completion", "mean"),
+bar_plot = bar_plot.dropna(subset=["abs", "completion"]).copy()
+
+if not bar_plot.empty:
+    # Summarise the selected year (or all years) into one record per state.
+    # Mean is used so that states with more recorded years are not over-counted.
+    bar_plot = (
+        bar_plot.groupby("state", as_index=False)
+        .agg(
+            abs=("abs", "mean"),
+            completion=("completion", "mean"),
+        )
+        .sort_values("abs", ascending=True)
     )
 
-    state_coordinates = {
-        "Johor": (1.85, 103.20),
-        "Kedah": (6.12, 100.37),
-        "Kelantan": (5.33, 102.00),
-        "Melaka": (2.19, 102.25),
-        "Negeri Sembilan": (2.72, 101.94),
-        "Pahang": (3.75, 102.40),
-        "Perak": (4.75, 100.90),
-        "Perlis": (6.45, 100.20),
-        "Pulau Pinang": (5.41, 100.33),
-        "Penang": (5.41, 100.33),
-        "Sabah": (5.98, 116.07),
-        "Sarawak": (1.55, 110.35),
-        "Selangor": (3.20, 101.50),
-        "Terengganu": (5.31, 103.13),
-        "W.P. Kuala Lumpur": (3.14, 101.69),
-        "Kuala Lumpur": (3.14, 101.69),
-        "W.P. Labuan": (5.28, 115.24),
-        "Labuan": (5.28, 115.24),
-        "W.P. Putrajaya": (2.93, 101.69),
-        "Putrajaya": (2.93, 101.69),
-    }
+    if not bar_plot.empty:
+        fig3 = make_subplots(
+            rows=1,
+            cols=2,
+            shared_yaxes=True,
+            horizontal_spacing=0.16,
+            subplot_titles=(
+                "Annual Live Births",
+                "Primary School Completion Rate",
+            ),
+        )
 
-    map_plot["latitude"] = map_plot["state"].map(
-        lambda state: state_coordinates.get(state, (np.nan, np.nan))[0]
-    )
-    map_plot["longitude"] = map_plot["state"].map(
-        lambda state: state_coordinates.get(state, (np.nan, np.nan))[1]
-    )
-    map_plot = map_plot.dropna(subset=["latitude", "longitude"])
+        # Left panel: annual live births
+        fig3.add_trace(
+            go.Bar(
+                x=bar_plot["abs"],
+                y=bar_plot["state"],
+                orientation="h",
+                name="Annual Live Births",
+                marker=dict(
+                    color=BLUE,
+                    line=dict(color="white", width=1),
+                ),
+                text=bar_plot["abs"].map(lambda value: f"{value:,.0f}"),
+                textposition="outside",
+                cliponaxis=False,
+                hovertemplate=(
+                    "<b>%{y}</b><br>"
+                    "Annual Live Births: %{x:,.0f}"
+                    "<extra></extra>"
+                ),
+            ),
+            row=1,
+            col=1,
+        )
 
-    if not map_plot.empty:
-        fig3 = px.scatter_geo(
-            map_plot,
-            lat="latitude",
-            lon="longitude",
-            size="abs",
-            color="completion",
-            hover_name="state",
-            hover_data={
-                "abs": ":,.0f",
-                "completion": ":.2f",
-                "latitude": False,
-                "longitude": False,
-            },
-            size_max=38,
-            color_continuous_scale="Tealgrn",
-            projection="mercator",
-            title="Malaysia Geographical Bubble Map",
-            labels={
-                "abs": "Annual Live Births",
-                "completion": "School Completion Rate (%)",
-            },
+        # Right panel: primary school completion rate
+        fig3.add_trace(
+            go.Bar(
+                x=bar_plot["completion"],
+                y=bar_plot["state"],
+                orientation="h",
+                name="School Completion Rate",
+                marker=dict(
+                    color=TEAL,
+                    line=dict(color="white", width=1),
+                ),
+                text=bar_plot["completion"].map(lambda value: f"{value:.1f}%"),
+                textposition="outside",
+                cliponaxis=False,
+                hovertemplate=(
+                    "<b>%{y}</b><br>"
+                    "School Completion Rate: %{x:.2f}%"
+                    "<extra></extra>"
+                ),
+            ),
+            row=1,
+            col=2,
         )
-        fig3.update_traces(
-            marker=dict(
-                opacity=0.88,
-                line=dict(width=1.5, color="white"),
-            )
+
+        fig3.update_xaxes(
+            title_text="Number of Live Births",
+            showgrid=True,
+            gridcolor="#E8EEF6",
+            zeroline=False,
+            rangemode="tozero",
+            row=1,
+            col=1,
         )
-        fig3.update_geos(
-            center=dict(lat=4.5, lon=109),
-            projection_scale=1.35,
-            lataxis_range=[0, 8],
-            lonaxis_range=[99, 120],
-            showland=True,
-            landcolor="#F0F3F7",
-            showocean=True,
-            oceancolor="#E8F3FA",
-            showcountries=True,
-            countrycolor="#B8C5D1",
-            showcoastlines=True,
-            coastlinecolor="#B8C5D1",
-            resolution=50,
+        fig3.update_xaxes(
+            title_text="Completion Rate (%)",
+            showgrid=True,
+            gridcolor="#E8EEF6",
+            zeroline=False,
+            rangemode="tozero",
+            row=1,
+            col=2,
         )
+        fig3.update_yaxes(
+            title_text="Malaysian State",
+            showgrid=False,
+            autorange="reversed",
+            row=1,
+            col=1,
+        )
+        fig3.update_yaxes(
+            showticklabels=False,
+            showgrid=False,
+            row=1,
+            col=2,
+        )
+
+        chart_height = max(560, 34 * len(bar_plot) + 170)
         fig3.update_layout(
             template="plotly_white",
-            height=680,
-            font=dict(family="Arial", size=12, color="#334155"),
+            title=dict(
+                text="Annual Live Births and School Completion by State",
+                x=0.02,
+                xanchor="left",
+                font=dict(size=20, color=DARK_BLUE),
+            ),
+            height=chart_height,
+            autosize=True,
+            showlegend=False,
             paper_bgcolor="#FFFFFF",
-            margin=dict(l=10, r=25, t=70, b=15),
+            plot_bgcolor="#FFFFFF",
+            font=dict(family="Arial", size=12, color="#334155"),
+            margin=dict(l=110, r=75, t=105, b=75),
+            bargap=0.28,
+            hoverlabel=dict(bgcolor="white", font_size=12),
         )
+
         st.plotly_chart(fig3, use_container_width=True)
+
         st.info(
-            "Bubble size represents annual live births. Bubble colour represents "
-            "the primary school completion rate. Hover over each bubble to view "
-            "the state-level values."
+            "The left bar chart compares the average annual live births for each "
+            "state, while the right bar chart compares the average primary school "
+            "completion rate. The two measures use separate horizontal scales "
+            "because they have different units."
         )
+
         with st.expander("View Objective 3 state-level data"):
-            display_map = map_plot[["state", "abs", "completion"]].rename(
+            display_bar = bar_plot[
+                ["state", "abs", "completion"]
+            ].rename(
                 columns={
                     "state": "State",
-                    "abs": "Annual Live Births",
-                    "completion": "School Completion Rate (%)",
+                    "abs": "Average Annual Live Births",
+                    "completion": "Average School Completion Rate (%)",
                 }
             )
-            st.dataframe(display_map, use_container_width=True, hide_index=True)
+            display_bar["Average Annual Live Births"] = (
+                display_bar["Average Annual Live Births"].round(0).astype(int)
+            )
+            display_bar["Average School Completion Rate (%)"] = (
+                display_bar["Average School Completion Rate (%)"].round(2)
+            )
+            st.dataframe(
+                display_bar.sort_values(
+                    "Average Annual Live Births", ascending=False
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
     else:
-        st.warning("No recognised Malaysian state names were found for the geographical map.")
+        st.warning("No data available for Objective 3 under the selected filters.")
 else:
     st.warning("No data available for Objective 3 under the selected filters.")
 
