@@ -144,6 +144,91 @@ st.markdown(
     section[data-testid="stSidebar"] h3 {
         color: #173B70;
     }
+    /* Premium sidebar polish */
+    .sidebar-count {
+        background: linear-gradient(110deg, #EAF2FF 0%, #E8F8F6 100%);
+        border: 1px solid #D5E5F2;
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #245A9A;
+        font-size: 12px;
+        font-weight: 750;
+        text-align: center;
+        margin-top: 7px;
+        margin-bottom: 8px;
+    }
+    .sidebar-section-label {
+        color: #294B75;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin: 9px 0 5px 0;
+    }
+    .sidebar-guide {
+        background: #FFFFFF;
+        border: 1px solid #DCE6F2;
+        border-radius: 14px;
+        padding: 12px 13px;
+        margin: 5px 0;
+        box-shadow: 0 4px 12px rgba(23, 59, 112, 0.055);
+    }
+    .sidebar-guide-item {
+        color: #52657D;
+        font-size: 12px;
+        line-height: 1.5;
+        padding: 9px 0;
+        border-bottom: 1px solid #EEF2F7;
+    }
+    .sidebar-guide-item:last-child {
+        border-bottom: none;
+        padding-bottom: 2px;
+    }
+    .sidebar-guide-number {
+        display: inline-block;
+        min-width: 25px;
+        text-align: center;
+        color: #245A9A;
+        background: #EAF2FF;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 7px;
+        padding: 4px 6px;
+        margin-right: 7px;
+    }
+    section[data-testid="stSidebar"] [data-baseweb="tag"] {
+        background: #EAF2FF !important;
+        border: 1px solid #C9DCF7 !important;
+        border-radius: 8px !important;
+        color: #214F86 !important;
+        font-weight: 650 !important;
+    }
+    section[data-testid="stSidebar"] [data-baseweb="tag"] span {
+        color: #214F86 !important;
+    }
+    section[data-testid="stSidebar"] button[kind="secondary"] {
+        min-height: 38px;
+        border: 1px solid #D6E2F0;
+        border-radius: 10px;
+        color: #245A9A;
+        background: #FFFFFF;
+        font-size: 12px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+    }
+    section[data-testid="stSidebar"] button[kind="secondary"]:hover {
+        border-color: #8FB3DF;
+        background: #F0F6FF;
+        color: #173B70;
+        transform: translateY(-1px);
+    }
+    .sidebar-footer {
+        color: #8A98AA;
+        font-size: 10px;
+        line-height: 1.6;
+        letter-spacing: 0.35px;
+        padding-top: 4px;
+    }
+
     .dashboard-hero {
         background: linear-gradient(120deg, #173B70 0%, #245A9A 65%, #18A999 100%);
         padding: 28px 32px;
@@ -421,34 +506,70 @@ if "state_filter" not in st.session_state:
     st.session_state["state_filter"] = all_states.copy()
 
 with st.sidebar:
+    # Sidebar heading and short description
     st.markdown(
-        '<div class="sidebar-heading">📊 Dashboard Filters</div>'
-        '<p class="sidebar-intro">Personalise the dashboard by choosing the '
-        'Malaysian states included in your analysis.</p>',
+        """
+        <div class="sidebar-heading">📊 Dashboard Filters</div>
+        <p class="sidebar-intro">
+            Personalise your dashboard by selecting Malaysian states
+            to include in your analysis.
+        </p>
+        """,
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="sidebar-label">STATE SELECTION</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sidebar-section-label">STATE SELECTION</div>',
+        unsafe_allow_html=True,
+    )
 
+    # Quick actions: select all states or clear the selection
     select_col, clear_col = st.columns(2)
     with select_col:
-        if st.button("Select all", use_container_width=True, key="select_all_states"):
+        if st.button(
+            "✓ Select All",
+            use_container_width=True,
+            key="select_all_states",
+        ):
             st.session_state["state_filter"] = all_states.copy()
+
     with clear_col:
-        if st.button("Clear", use_container_width=True, key="clear_states"):
+        if st.button(
+            "✕ Clear",
+            use_container_width=True,
+            key="clear_states",
+        ):
             st.session_state["state_filter"] = []
 
+    # Multi-state selector
     selected_states = st.multiselect(
-        "Choose state(s)",
+        "Choose Malaysian states",
         options=all_states,
         key="state_filter",
         placeholder="Search or select states...",
-        help="You can select one state or multiple states. Use the buttons above to select all or clear the selection.",
+        help=(
+            "Select one or multiple Malaysian states. "
+            "Use Select All or Clear for quick selection."
+        ),
     )
-    st.caption(f"{len(selected_states)} of {len(all_states)} states selected")
+
+    # Selected-state counter
+    st.markdown(
+        f"""
+        <div class="sidebar-count">
+            ✓ {len(selected_states)} / {len(all_states)} States Selected
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.divider()
-    st.markdown('<div class="sidebar-label">VISUALISATION GUIDE</div>', unsafe_allow_html=True)
+
+    # Guide to the three visualisation objectives
+    st.markdown(
+        '<div class="sidebar-section-label">VISUALISATION GUIDE</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         """
         <div class="sidebar-guide">
@@ -468,9 +589,15 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
+
+    st.divider()
     st.markdown(
-        '<div class="sidebar-footer">SCIENTIFIC VISUALISATION ASSIGNMENT<br>'
-        'JIE42403 · MALAYSIA</div>',
+        """
+        <div class="sidebar-footer">
+            SCIENTIFIC VISUALISATION ASSIGNMENT<br>
+            JIE42403 · MALAYSIA
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
